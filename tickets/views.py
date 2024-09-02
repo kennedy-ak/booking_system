@@ -1,175 +1,12 @@
-# from django.shortcuts import render, redirect
-# from django.http import JsonResponse
-# from django.conf import settings
-# from .models import Ticket, Transaction
-# import random
-# import string
-# import requests
-# import os
 
-# def generate_unique_code():
-#     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-
-# def book_ticket(request):
-#     if request.method == 'POST':
-#         name = request.POST['name']
-#         phone = request.POST['phone_number']
-#         email = request.POST['email']
-#         ticket_type = request.POST['ticket_type']
-#         amount = 50 if ticket_type == 'regular' else 70
-#         unique_code = generate_unique_code()
-
-#         ticket = Ticket.objects.create(name=name, phone_number=phone, email=email, ticket_type=ticket_type, unique_code=unique_code)
-#         transaction = Transaction.objects.create(ticket=ticket, amount=amount)
-#         try:
-#             url = request.build_absolute_uri('/')[:-1] + '/account/pay-verify'  # Adjust according to actual URL
-#             authorization_url = pay(transaction, url)
-#             transaction.transaction_id = response['reference']  # Save the transaction reference from Paystack
-#             transaction.save()
-#             return redirect(authorization_url)
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)})
-
-#     return render(request, 'tickets/book.html')
-
-
-
-# def pay(transaction , url):
-#     try:
-
-        
-
-
-        
-
-#         req = requests.post("https://api.paystack.co/transaction/initialize" , 
-#         headers = {
-#             "Authorization" : f"Bearer {os.getenv('PAY_KEY')}",
-#             "Content_type" : "application/json"
-#         },
-#         data= {
-#             "email" : transaction.user.email, 
-#             "amount" : int(transaction.amount * 100),
-#             "currency" : "GHS", 
-#             "reference" : transaction.transaction_id, 
-#             "callback_url" : f"{url}/account/pay-verify", 
-#             "channels" : ["card" , "bank" , "ussd" , "qr" , "mobile_money" , "bank_transfer" , "eft"], 
-
-#         })
-
-       
-#         if(req.status_code != 200):
-#             raise Exception("Payment failed")
-
-#         response = req.json()
-
-        
-#         req.close()
-
-#         return response['data']['authorization_url']
-
-#     except Exception as e:
-#         # if e == ##### : custom handle some request errors or propagate error foward
-#         print(e)
-#         raise Exception(e)
-
-# def verify_payment(transaction_id):
-#     headers = {
-#         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-#         "Content-Type": "application/json"
-#     }
-#     response = requests.get(f"https://api.paystack.co/transaction/verify/{transaction_id}", headers=headers)
-#     if response.status_code == 200:
-#         data = response.json()['data']
-#         return data['status'] == 'success'
-#     else:
-#         raise Exception("Failed to verify payment")
-
-# def pay_verify(request):
-#     try:
-#         transaction_id = request.GET.get('reference')
-#         transaction = Transaction.objects.get(transaction_id=transaction_id)
-#         if verify_payment(transaction_id):
-#             transaction.settled = True
-#             transaction.save()
-#             # Consider redirecting to a success page or rendering success directly
-#             return render(request, 'tickets/verify_pay.html')
-#         else:
-#             return JsonResponse({"status": "error", "message": "Payment verification failed"})
-#     except Transaction.DoesNotExist:
-#         return JsonResponse({"status": "error", "message": "Transaction not found"})
-#     except Exception as e:
-#         return JsonResponse({"status": "error", "message": str(e)})
-
-
-# # def verify_payment(transaction):
-# #     try:
-        
-# #         req = requests.get(f"https://api.paystack.co/transaction/verify/{transaction.transaction_id}" , 
-# #         headers = {
-# #             "Authorization" : f"Bearer {os.getenv('PAY_KEY')}",
-# #             "Content_type" : "application/json"
-# #         })  
-
-# #         if(req.status_code != 200):
-# #             raise Exception("Payment verification failed")
-
-# #         response = req.json()
-
-# #         req.close()
-
-# #         return response['data']['status'] == "success"
-
-    
-
-# #     except Exception as e:
-# #         print(e)
-# #         raise Exception(e)
-
-
-
-# # def pay_verify(request):
-#     try:
-
-#         transaction_id = request.GET['reference']
-        
-#         transaction = Transaction.objects.get(transaction_id = transaction_id)
-
-#         success = verify_payment(transaction)
-
-
-
-#         if not success:
-#             return Response({
-#                 "status" : "error" , 
-#                 "message" : f"Payment verification failed. If you've been charged, contact support at support@retailsensei.com with this id #{transaction_id}"
-#             } , status = 200 , content_type= "application/json")
-
-#         transaction.settled = True
-#         transaction.save()
-
-#         return render(request, 'tickets/verify_pay.html')
-
-#     except Transaction.DoesNotExist:
-#         return Response({
-#             "status" : "error" , 
-#             "message" : "Transaction not found"
-#         } , status = 200 , content_type= "application/json")
-
-#     except Exception as e:
-#         print(e)
-#         return Response("An internal error occured", 
-#             status = 500 , content_type="application/json")
-
-
-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Ticket, Transaction
 import random
 import string
 from django.http import JsonResponse
 import requests
 import os
+from django.db.models import Q
 from django.conf import settings
 def generate_unique_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
@@ -179,6 +16,53 @@ import uuid
 def generate_transaction_id():
     return str(uuid.uuid4())  # Generates a unique UUID
 
+#     api_url = "https://smsc.hubtel.com/v1/messages/send"
+#     params = {
+#         "clientsecret": "efaaiwtl",  # Your Hubtel client secret
+#         "clientid": "pzpyfjaj",      # Your Hubtel client ID
+#         "from": "DJThomas",            # The sender ID (adjust as needed)
+#         "to": phone_number,
+#         "content": message
+#     }
+    
+#     response = requests.get(api_url, params=params)
+    
+#     if response.status_code == 200:
+#         response_data = response.json()
+#         if response_data.get("status") == 0:
+#             # Handle pending status
+#             print("SMS is pending delivery. Message ID:", response_data.get("messageId"))
+#         else:
+#             print("SMS sent successfully. Message ID:", response_data.get("messageId"))
+#         return response_data
+#     else:
+#         raise Exception(f"Failed to send SMS: {response.text}")
+def send_sms(phone_number, message):
+    api_url = "https://smsc.hubtel.com/v1/messages/send"
+    params = {
+        "clientsecret": "uccwhbgq", 
+        "clientid": "ueazrngs",      
+        "from": "DJTommy",          # The sender ID (adjust as needed)
+        "to": phone_number,
+        "content": message
+    }
+    
+    response = requests.get(api_url, params=params)
+    
+    if response.status_code == 200:
+        response_data = response.json()
+        if response_data.get("status") == 0:
+            # SMS is pending delivery, but it's still considered successfully sent
+            print("SMS is pending delivery. Message ID:", response_data.get("messageId"))
+            return response_data
+        elif response_data.get("status") == 1:
+            # SMS was sent successfully
+            print("SMS sent successfully. Message ID:", response_data.get("messageId"))
+            return response_data
+        else:
+            raise Exception(f"Failed to send SMS: {response.text}")
+    else:
+        raise Exception(f"Failed to send SMS: {response.text}")
 
 def book_ticket(request):
     if request.method == 'POST':
@@ -204,6 +88,47 @@ def book_ticket(request):
     return render(request, 'tickets/book.html')
 
 
+# def payment_callback(request):
+#     ref = request.GET.get('reference')
+#     try:
+#         transaction = Transaction.objects.get(transaction_id=ref)
+#         if verify_payment(ref):
+#             transaction.settled = True
+#             transaction.save()
+
+
+#         # Send SMS with the unique code
+#             message = f"Dear {transaction.ticket.name}, your ticket purchase for {transaction.ticket.ticket_type} was successful! Your unique code is {transaction.ticket.unique_code}. Show this code at the event. Thank you!"
+#             send_sms(transaction.ticket.phone_number, message)
+#             # You might want to update the ticket status or send a confirmation message/email
+#             return render(request, 'tickets/verify_pay.html')
+#         else:
+#             return JsonResponse({'error': 'Payment verification failed'})
+#     except Transaction.DoesNotExist:
+#         return JsonResponse({'error': 'Transaction not found'})
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)})
+
+# def payment_callback(request):
+#     ref = request.GET.get('reference')
+#     try:
+#         transaction = Transaction.objects.get(transaction_id=ref)
+#         if verify_payment(ref):
+#             transaction.settled = True
+#             transaction.save()
+
+#             # Send SMS with the unique code
+#             message = f"Dear {transaction.ticket.name}, your ticket purchase for {transaction.ticket.ticket_type} was successful! Your unique code is {transaction.ticket.unique_code}. Show this code at the event. Thank you!"
+#             send_sms(transaction.ticket.phone_number, message)
+
+#             # Redirect to the verification success template after SMS is sent
+#             return render(request, 'tickets/verify_pay.html')
+#         else:
+#             return JsonResponse({'error': 'Payment verification failed'})
+#     except Transaction.DoesNotExist:
+#         return JsonResponse({'error': 'Transaction not found'})
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)})
 def payment_callback(request):
     ref = request.GET.get('reference')
     try:
@@ -212,7 +137,14 @@ def payment_callback(request):
             transaction.settled = True
             transaction.save()
 
-            # You might want to update the ticket status or send a confirmation message/email
+            # Send SMS with the unique code
+            message = f"Dear {transaction.ticket.name}, your ticket purchase for {transaction.ticket.ticket_type} was successful! Your unique code is {transaction.ticket.unique_code}. Show this code at the event. Thank you!"
+            sms_response = send_sms(transaction.ticket.phone_number, message)
+
+            # Log the SMS response for tracking if needed
+            print("SMS Response:", sms_response)
+
+            # Redirect to the verification success template after SMS is sent
             return render(request, 'tickets/verify_pay.html')
         else:
             return JsonResponse({'error': 'Payment verification failed'})
@@ -223,7 +155,7 @@ def payment_callback(request):
 
 def pay(transaction, callback_url):
     headers = {
-        "Authorization": "Bearer sk_test_57902e34a214be5d691ec0d198f684b99325b299",
+        "Authorization": "Bearer sk_live_407fb08d42eeffbc54dfab47d786ecae6b15d396",
         "Content-Type": "application/json"
     }
     data = {
@@ -245,7 +177,7 @@ def pay(transaction, callback_url):
 
 def verify_payment(transaction_id):
     headers = {
-        "Authorization": 'Bearer sk_test_57902e34a214be5d691ec0d198f684b99325b299',
+        "Authorization": 'Bearer sk_live_407fb08d42eeffbc54dfab47d786ecae6b15d396',
         "Content-Type": "application/json"
     }
     response = requests.get(f"https://api.paystack.co/transaction/verify/{transaction_id}", headers=headers)
@@ -254,6 +186,19 @@ def verify_payment(transaction_id):
         return data['status'] == 'success'
     else:
         raise Exception("Failed to verify payment")
+
+
+
+def search_ticket(request):
+    if request.method == 'POST':
+        unique_code = request.POST.get('unique_code')
+        try:
+            ticket = Ticket.objects.get(unique_code=unique_code)
+            return render(request, 'tickets/ticket_details.html', {'ticket': ticket})
+        except Ticket.DoesNotExist:
+            return render(request, 'tickets/search.html', {'error': 'Ticket not found'})
+    
+    return render(request, 'tickets/search.html')
 
 
 # sms

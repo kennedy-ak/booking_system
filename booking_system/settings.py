@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -85,6 +85,8 @@ DATABASES = {
     }
 }
 
+DATABASES['default'] = dj_database_url.parse('postgresql://tommy_django_render_user:lUa53JPvhuPeGwilP1ScojHChSCHMgDZ@dpg-crau6ai3esus73acnaqg-a.ohio-postgres.render.com/tommy_django_render')
+# postgresql://tommy_django_render_user:lUa53JPvhuPeGwilP1ScojHChSCHMgDZ@dpg-crau6ai3esus73acnaqg-a.ohio-postgres.render.com/tommy_django_render
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -126,3 +128,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+
+HUBTEL_API_KEY = 'your_hubtel_api_key'
+HUBTEL_SENDER_ID = 'your_sender_id'
