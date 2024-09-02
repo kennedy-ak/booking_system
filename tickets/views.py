@@ -70,7 +70,7 @@ def book_ticket(request):
         phone = request.POST.get('phone_number')
         email = request.POST.get('email')
         ticket_type = request.POST.get('ticket_type')
-        amount = 69 if ticket_type == 'single' else 120
+        amount = 1 if ticket_type == 'single' else 1
         unique_code = generate_unique_code()
 
         ticket = Ticket.objects.create(name=name, phone_number=phone, email=email, ticket_type=ticket_type, unique_code=unique_code)
