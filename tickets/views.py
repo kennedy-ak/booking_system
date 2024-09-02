@@ -40,8 +40,8 @@ def generate_transaction_id():
 def send_sms(phone_number, message):
     api_url = "https://smsc.hubtel.com/v1/messages/send"
     params = {
-        "clientsecret": "uccwhbgq", 
-        "clientid": "ueazrngs",      
+        "clientsecret": "cxvdnzcw", 
+        "clientid": "adgliigb",      
         "from": "DJTommy",          # The sender ID (adjust as needed)
         "to": phone_number,
         "content": message
