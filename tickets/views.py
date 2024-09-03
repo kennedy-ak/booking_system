@@ -14,29 +14,8 @@ def generate_unique_code():
 import uuid
 
 def generate_transaction_id():
-    return str(uuid.uuid4())  # Generates a unique UUID
+    return str(uuid.uuid4())  
 
-#     api_url = "https://smsc.hubtel.com/v1/messages/send"
-#     params = {
-#         "clientsecret": "efaaiwtl",  # Your Hubtel client secret
-#         "clientid": "pzpyfjaj",      # Your Hubtel client ID
-#         "from": "DJThomas",            # The sender ID (adjust as needed)
-#         "to": phone_number,
-#         "content": message
-#     }
-    
-#     response = requests.get(api_url, params=params)
-    
-#     if response.status_code == 200:
-#         response_data = response.json()
-#         if response_data.get("status") == 0:
-#             # Handle pending status
-#             print("SMS is pending delivery. Message ID:", response_data.get("messageId"))
-#         else:
-#             print("SMS sent successfully. Message ID:", response_data.get("messageId"))
-#         return response_data
-#     else:
-#         raise Exception(f"Failed to send SMS: {response.text}")
 def send_sms(phone_number, message):
     api_url = "https://smsc.hubtel.com/v1/messages/send"
     params = {
@@ -88,47 +67,6 @@ def book_ticket(request):
     return render(request, 'tickets/book.html')
 
 
-# def payment_callback(request):
-#     ref = request.GET.get('reference')
-#     try:
-#         transaction = Transaction.objects.get(transaction_id=ref)
-#         if verify_payment(ref):
-#             transaction.settled = True
-#             transaction.save()
-
-
-#         # Send SMS with the unique code
-#             message = f"Dear {transaction.ticket.name}, your ticket purchase for {transaction.ticket.ticket_type} was successful! Your unique code is {transaction.ticket.unique_code}. Show this code at the event. Thank you!"
-#             send_sms(transaction.ticket.phone_number, message)
-#             # You might want to update the ticket status or send a confirmation message/email
-#             return render(request, 'tickets/verify_pay.html')
-#         else:
-#             return JsonResponse({'error': 'Payment verification failed'})
-#     except Transaction.DoesNotExist:
-#         return JsonResponse({'error': 'Transaction not found'})
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)})
-
-# def payment_callback(request):
-#     ref = request.GET.get('reference')
-#     try:
-#         transaction = Transaction.objects.get(transaction_id=ref)
-#         if verify_payment(ref):
-#             transaction.settled = True
-#             transaction.save()
-
-#             # Send SMS with the unique code
-#             message = f"Dear {transaction.ticket.name}, your ticket purchase for {transaction.ticket.ticket_type} was successful! Your unique code is {transaction.ticket.unique_code}. Show this code at the event. Thank you!"
-#             send_sms(transaction.ticket.phone_number, message)
-
-#             # Redirect to the verification success template after SMS is sent
-#             return render(request, 'tickets/verify_pay.html')
-#         else:
-#             return JsonResponse({'error': 'Payment verification failed'})
-#     except Transaction.DoesNotExist:
-#         return JsonResponse({'error': 'Transaction not found'})
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)})
 def payment_callback(request):
     ref = request.GET.get('reference')
     try:
@@ -201,7 +139,3 @@ def search_ticket(request):
     return render(request, 'tickets/search.html')
 
 
-# sms
-# queue
-# admin page
-# bulk sms
