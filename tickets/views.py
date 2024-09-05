@@ -93,7 +93,7 @@ def payment_callback(request):
 
 def pay(transaction, callback_url):
     headers = {
-        "Authorization": "Bearer sk_live_407fb08d42eeffbc54dfab47d786ecae6b15d396",
+        "Authorization": "Bearer sk_live_84b6cd6f23e870fec50b79006248eb6dd326f2c0",
         "Content-Type": "application/json"
     }
     data = {
@@ -115,7 +115,7 @@ def pay(transaction, callback_url):
 
 def verify_payment(transaction_id):
     headers = {
-        "Authorization": 'Bearer sk_live_407fb08d42eeffbc54dfab47d786ecae6b15d396',
+        "Authorization": 'Bearer sk_live_84b6cd6f23e870fec50b79006248eb6dd326f2c0',
         "Content-Type": "application/json"
     }
     response = requests.get(f"https://api.paystack.co/transaction/verify/{transaction_id}", headers=headers)
