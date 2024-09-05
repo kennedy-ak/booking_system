@@ -86,8 +86,6 @@ DATABASES = {
     }
 }
 
-# DATABASES['default'] = dj_database_url.parse('postgresql://tommy_django_render_user:lUa53JPvhuPeGwilP1ScojHChSCHMgDZ@dpg-crau6ai3esus73acnaqg-a.ohio-postgres.render.com/tommy_django_render')
-# postgresql://tommy_django_render_user:lUa53JPvhuPeGwilP1ScojHChSCHMgDZ@dpg-crau6ai3esus73acnaqg-a.ohio-postgres.render.com/tommy_django_render
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
