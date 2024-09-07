@@ -28,8 +28,9 @@ def send_sms(phone_number, message):
     
     response = requests.get(api_url, params=params)
     
-    if response.status_code == 200:
+    if response.status_code == 201:
         response_data = response.json()
+       
         if response_data.get("status") == 0:
             # SMS is pending delivery, but it's still considered successfully sent
             print("SMS is pending delivery. Message ID:", response_data.get("messageId"))
@@ -49,7 +50,7 @@ def book_ticket(request):
         phone = request.POST.get('phone_number')
         email = request.POST.get('email')
         ticket_type = request.POST.get('ticket_type')
-        amount = 1 if ticket_type == 'single' else 1
+        amount = 69 if ticket_type == 'single' else 120
         unique_code = generate_unique_code()
 
         ticket = Ticket.objects.create(name=name, phone_number=phone, email=email, ticket_type=ticket_type, unique_code=unique_code)
