@@ -57,6 +57,8 @@ def book_ticket(request):
         transaction_id = generate_transaction_id()
         transaction = Transaction(transaction_id=transaction_id, ticket=ticket, amount=amount)
         transaction.save()
+        ticket.save()
+        
 
         try:
             url = request.build_absolute_uri('/')[:-1] + '/callback/'
